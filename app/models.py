@@ -79,8 +79,8 @@ class Question(db.Model):
         }
 
 
-class DetailQuestion(db.Model):
-    __tablename__ = "detail_questions"
+class Choice(db.Model):
+    __tablename__ = "choices"
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
@@ -103,11 +103,11 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    detail_question_id = db.Column(db.Integer, db.ForeignKey("detail_questions.id"))
+    choice_id = db.Column(db.Integer, db.ForeignKey("choices.id"))
 
     def to_dict(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "detail_question_id": self.detail_question_id,
+            "choice_id": self.choice_id,
         }
