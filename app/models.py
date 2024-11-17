@@ -65,9 +65,9 @@ class Question(db.Model):
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     sqe = db.Column(db.Integer, nullable=False)
 
-    image_id = db.Column(db.Integer, db.ForeignKey("images.id"), nullable=False)
+    image_id = db.Column(db.Integer, db.ForeignKey("images.id"), nullable=False) # 이미지 연결
 
-    image = db.relationship("Image", back_populates="questions")
+    image = db.relationship("Image", back_populates="questions") # 관계 설정
 
     def to_dict(self):
         return {
