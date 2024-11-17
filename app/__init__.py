@@ -3,6 +3,7 @@ from config import api, db
 from flask import Flask
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
+from routes import route_bp
 
 import app.models
 
@@ -21,8 +22,7 @@ def create_app():
     migrate.init_app(application, db)
 
     # 블루 프린트 등록
-    from app.routes import route_bp
-    
+    application.register_blueprint(route_bp)
 
     @click.command("init-db")
     @with_appcontext
