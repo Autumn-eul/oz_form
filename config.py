@@ -1,3 +1,7 @@
+import os
+
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///local.db")
+
 from flask_smorest import Api
 from flask_sqlalchemy import SQLAlchemy
 
