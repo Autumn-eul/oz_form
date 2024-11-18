@@ -14,3 +14,7 @@ class Config:
     SQLALCHEMY_MAX_OVERFLOW = 5
     SQLALCHEMY_ECHO = False
     reload = True
+    API_TITLE = "My API"  
+    API_VERSION = "v1"  
+    OPENAPI_VERSION = "3.0.2"  
+    SECRET_KEY = "oz_form_secret"
