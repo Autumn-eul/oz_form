@@ -1,9 +1,11 @@
-from config import db
-from models import Question, Choice, Image, ImageStatus
-from app import create_app
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app.config import db
+from app.models import Question, Choice, Image, ImageStatus
+from app.__init__ import create_app
 
 def question_data():
-    db.create_all()
 
     # 이미지 생성
     image1 = Image(
@@ -31,6 +33,15 @@ def question_data():
         {"title" : "붕어빵 어디서부터 먹어?", "step" : 4, "image" : image4}
     ]
 
+    for q in questions:
+        question = Question(title = q['title'],
+                            step = q['step'],
+                            image = q['image'],
+                            is_active = True)
+        db.session.add(question)
+
+    db.session.commit()
+
     choices = [
         {"answer": "1. 부먹", "question_id": 1, "step": 1},
         {"answer": "2. 찍먹", "question_id": 1, "step": 2},
@@ -52,15 +63,6 @@ def question_data():
         {"answer": "3. 한입만 먹는다", "question_id": 4, "step": 3},
         {"answer": "4. 붕어빵을 왜 먹는지 모르겠다", "question_id": 4, "step": 4},
     ]
-
-    for q in questions:
-        question = Question(title = q['title'],
-                            step = q['step'],
-                            image = q['image'],
-                            is_active = True)
-        db.session.add(question)
-
-    db.session.commit()
 
     for c in choices:
         choice = Choice(answer = c['answer'],

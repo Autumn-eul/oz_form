@@ -1,7 +1,6 @@
 from app import create_app
-from config import db
+from app.config import db
 from app.models import User, Question, Choice, Answer
-from app.routes import survey
 
 application = create_app()
 

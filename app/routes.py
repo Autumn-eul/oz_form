@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for
-from config import db
-from models import Question, Choice, Answer
+from app.config import db
+from app.models import Question, Choice, Answer
 
-route_bp = Blueprint("route", __name__)
+route_bp = Blueprint("survey_routes", __name__)
 
 # 설문조사 생성
 @route_bp.route('/questions/<int:step>', methods = ['GET', 'POST'])
@@ -21,13 +21,13 @@ def survey(step):
     # POST : 답변 저장
     if request.method == 'POST':
         user_id = request.form.get('user_id')
-        answer = request.form.get('answer')
+        choice_id = request.form.get('choice_id')
 
-        if not user_id or not answer:
-            return jsonify({"msg" : "User ID or answer is missiing"}), 400
+        if not user_id or not choice_id:
+            return jsonify({"msg" : "User ID or choice Id is missiing"}), 400
         
         # 답변 저장
-        new_answer = Answer(user_id = user_id, choice_id = answer)
+        new_answer = Answer(user_id = user_id, choice_id = choice_id)
         db.session.add(new_answer)
         db.session.commit()
 

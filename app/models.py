@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from enum import Enum
-
-from config import db
+from app.config import db
 
 
 class AgeStatus(Enum):
@@ -24,11 +23,11 @@ class ImageStatus(Enum):
 
 class User(db.Model):
     __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(10), nullable=False)
-    age = db.Column(db.Enum(AgeStatus), nullable=False)
-    gender = db.Column(db.Enum(GenderStatus), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, extend_existing=True)
+    name = db.Column(db.String(10), nullable=False, extend_existing=True)
+    age = db.Column(db.Enum(AgeStatus), nullable=False, extend_existing=True)
+    gender = db.Column(db.Enum(GenderStatus), nullable=False, extend_existing=True)
+    email = db.Column(db.String(120), unique=True, nullable=False, extend_existing=True)
 
     def to_dict(self):
         return {
@@ -48,7 +47,7 @@ class Image(db.Model):
     url = db.Column(db.TEXT, nullable=False)
     type = db.Column(db.Enum(ImageStatus), nullable=False)
 
-    questions = db.relationship("Question", back_populates="image")
+    questions = db.relationship("Question", back_populates="image") # 관계 설정 추가
 
     def to_dict(self):
         return {
@@ -63,9 +62,9 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
-    sqe = db.Column(db.Integer, nullable=False)
+    step = db.Column(db.Integer, nullable=False)
 
-    image_id = db.Column(db.Integer, db.ForeignKey("images.id"), nullable=False) # 이미지 연결
+    image_id = db.Column(db.Integer, db.ForeignKey("images.id"), nullable=False) # ForeignKey 설정
 
     image = db.relationship("Image", back_populates="questions") # 관계 설정
 
@@ -74,7 +73,7 @@ class Question(db.Model):
             "id": self.id,
             "title": self.title,
             "is_active": self.is_active,
-            "sqe": self.sqe,
+            "step": self.step,
             "image": self.image.to_dict() if self.image else None,
         }
 
@@ -82,18 +81,18 @@ class Question(db.Model):
 class Choice(db.Model):
     __tablename__ = "choices"
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.Text, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
-    sqe = db.Column(db.Integer, nullable=False)
+    step = db.Column(db.Integer, nullable=False)
 
     question_id = db.Column(db.Integer, db.ForeignKey("questions.id"))
 
     def to_dict(self):
         return {
             "id": self.id,
-            "content": self.content,
+            "answer": self.answer,
             "is_active": self.is_active,
-            "sqe": self.sqe,
+            "step": self.step,
             "question_id": self.question_id,
         }
 
