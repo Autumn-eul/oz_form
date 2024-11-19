@@ -1,8 +1,52 @@
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for
 from config import db
-from app.models import Question, Choice, Answer
+from app.models import Question, Choice, Answer, User, AgeStatus, GenderStatus
 
 route_bp = Blueprint("survey_routes", __name__)
+
+
+@route_bp.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        data = request.get_json()
+
+        # 데이터 유효성 검사
+        name = data.get("name")
+        age = data.get("age")
+        gender = data.get("gender")
+        email = data.get("email")
+
+        if not all([name, age, gender, email]):
+            return jsonify({"message": "공백란이 존재하면 안됩니다."}), 400
+
+        # 나이 및 성별 상태 확인
+        try:
+            age_status = AgeStatus[age]
+            gender_status = GenderStatus[gender]
+        except KeyError:
+            return jsonify({"message": "잘못된 나이 또는 성별 선택입니다."}), 400
+
+        # 이메일 중복 확인
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return jsonify({"message": "이미 존재하는 이메일입니다."}), 400
+
+        # 사용자 객체 생성 및 데이터베이스에 추가
+        new_user = User(name=name, age=age_status, gender=gender_status, email=email)
+        db.session.add(new_user)
+        db.session.commit()
+
+        # 성공 메시지 및 user_id 반환
+        return jsonify({"message": "회원가입 성공!", "user_id": new_user.id})
+
+    # GET 요청 후 signup 페이지 렌더링
+    return render_template("signup.html")
+
+@route_bp.route("/question/<int:question_id>")
+def question(question_id):
+
+    return render_template("question.html", question_id=question_id)
+
 
 # 설문조사 생성
 @route_bp.route('/questions/<int:step>', methods = ['GET', 'POST'])
@@ -21,7 +65,7 @@ def survey(step):
     # POST : 답변 저장
     if request.method == 'POST':
         user_id = request.form.get('user_id')
-        choice_id = request.form.get('choice_id')
+        choice_id = request.form.get('answer')
 
         if not user_id or not choice_id:
             return jsonify({"msg" : "User ID or choice Id is missiing"}), 400
@@ -34,10 +78,10 @@ def survey(step):
         # 다음 질문으로 이동
         next_question = Question.query.filter_by(step = step + 1, is_active = True).first()
         if next_question:
-            return redirect(url_for('route_bp.survey', step = next_question.step, user_id = user_id))
+            return redirect(url_for('survey_routes.survey', step = next_question.step, user_id = user_id))
         
         # 마지막 질문이면 설문 완료 페이지로 이동
-        return redirect(url_for('route_bp.survey_complete', user_id = user_id))
+        return redirect(url_for('survey_routes.survey_complete', user_id = user_id))
     
 @route_bp.route('/survey/complete')
 def survey_complete():
