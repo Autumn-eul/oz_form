@@ -1,10 +1,8 @@
 import click
-from config import api, db
+from config import db
 from flask import Flask
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
-from flask_smorest import Api
-from config import Config
 from app.routes import route_bp
 
 import app.models
@@ -19,7 +17,6 @@ def create_app():
     application.secret_key = "oz_form_secret"
 
     db.init_app(application)
-    api.init_app(application)
 
     migrate.init_app(application, db)
 
