@@ -1,4 +1,6 @@
 from app import create_app
+from config import db
+from app.models import User, Question, Choice, Answer
 
 application = create_app()
 

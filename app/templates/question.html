@@ -28,7 +28,7 @@
             <!-- 선택지들 -->
             {% for choice in choices %}
                 <div id="choice_{{ choice.id }}" class="choice-block" onclick="selectChoice({{ choice.id }})">
-                    {{ choice.content }}
+                    {{ choice.answer }}
                 </div>
             {% endfor %}
             <input type="hidden" name="answer" id="selected_answer" value=""> <!-- 선택된 값이 저장될 input -->
