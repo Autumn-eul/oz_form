@@ -23,11 +23,11 @@ class ImageStatus(Enum):
 
 class User(db.Model):
     __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True, extend_existing=True)
-    name = db.Column(db.String(10), nullable=False, extend_existing=True)
-    age = db.Column(db.Enum(AgeStatus), nullable=False, extend_existing=True)
-    gender = db.Column(db.Enum(GenderStatus), nullable=False, extend_existing=True)
-    email = db.Column(db.String(120), unique=True, nullable=False, extend_existing=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(10), nullable=False)
+    age = db.Column(db.Enum(AgeStatus), nullable=False)
+    gender = db.Column(db.Enum(GenderStatus), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
 
     def to_dict(self):
         return {

@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for
-from app.config import db
+from config import db
 from app.models import Question, Choice, Answer
 
 route_bp = Blueprint("survey_routes", __name__)
