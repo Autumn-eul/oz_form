@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from enum import Enum
-from app.config import db
+from config import db
 
 
 class AgeStatus(Enum):

@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from app.config import db
+from config import db
 from app.models import Question, Choice, Image, ImageStatus
 from app.__init__ import create_app
 
