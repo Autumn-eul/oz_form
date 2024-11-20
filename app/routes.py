@@ -1,4 +1,8 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for
+from sqlalchemy import func # 집계함수
 from config import db
 from app.models import Question, Choice, Answer, User, AgeStatus, GenderStatus
 
@@ -87,3 +91,60 @@ def survey(step):
 def survey_complete():
     user_id = request.args.get('user_id')
     return render_template('results.html', user_id = user_id)
+
+# 결과페이지
+@route_bp.route('/results/stats', methods=['GET'])
+def get_results_stats():
+    # 총 응답 수 
+    total_responses_query = db.session.query(
+        Choice.answer,  
+        func.count(Answer.id).label("response_count")  
+    ).join(Answer, Choice.id == Answer.choice_id).group_by(Choice.answer).all()
+
+    # 총 응답 수 데이터 구성
+    total_responses = {
+        "labels": [record[0] for record in total_responses_query],
+        "values": [record[1] for record in total_responses_query]
+    }
+
+    # 나이별 분포 
+    age_distribution_query = db.session.query(
+        User.age, func.count(User.id)
+    ).group_by(User.age).all()
+    age_distribution = {
+        "labels": [age[0].value for age in age_distribution_query],  
+        "values": [age[1] for age in age_distribution_query]
+    }
+
+    # 성별 분포 
+    gender_distribution_query = db.session.query(
+        User.gender, func.count(User.id)
+    ).group_by(User.gender).all()
+    gender_distribution = {
+        "labels": [gender[0].value for gender in gender_distribution_query],  
+        "values": [gender[1] for gender in gender_distribution_query]
+    }
+
+    # 질문별 선택지 비율
+    question_charts = []
+    for question in Question.query.all():  
+        choices = Choice.query.filter_by(question_id=question.id).all()
+        choice_labels = [choice.answer for choice in choices]
+        choice_counts = [
+            db.session.query(func.count(Answer.id))
+            .filter(Answer.choice_id == choice.id)
+            .scalar()
+            for choice in choices
+        ]
+        question_charts.append({
+            "labels": choice_labels,
+            "values": choice_counts
+        })
+
+    # JSON 데이터로 반환
+    return jsonify({
+        "total_responses": total_responses,
+        "age_distribution": age_distribution,  
+        "gender_distribution": gender_distribution,  
+        "question_charts": question_charts  
+    })
