@@ -8,6 +8,10 @@ from app.models import Question, Choice, Answer, User, AgeStatus, GenderStatus
 
 route_bp = Blueprint("survey_routes", __name__)
 
+# 이미지 연결
+@route_bp.route("/")
+def index():
+    return render_template("index.html")
 
 @route_bp.route("/signup", methods=["GET", "POST"])
 def signup():
