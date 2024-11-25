@@ -33,7 +33,7 @@
             {% endfor %}
             <input type="hidden" name="answer" id="selected_answer" value=""> <!-- 선택된 값이 저장될 input -->
             <button type="submit" class="btn btn-primary btn-lg mt-3" {% if not selected_choice %}disabled{% endif %}>
-                {% if question.sqe == 4 %}제출하기{% else %}다음{% endif %}
+                {% if question.step == 4 %}제출하기{% else %}다음{% endif %}
             </button>
         </form>
     </div>
